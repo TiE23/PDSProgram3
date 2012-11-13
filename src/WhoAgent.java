@@ -13,7 +13,7 @@ public class WhoAgent extends UWAgent implements Serializable {
 	private int repetitions;
 	private int cycle = 1;
 	private long startTime;
-	private Vector<String> results;
+	private Vector<StringBuffer> results;
 
 	/**
 	 * Constructor copies args to private memory
@@ -33,7 +33,7 @@ public class WhoAgent extends UWAgent implements Serializable {
 			my_args[x] = args[x];
 
 		
-		results = new Vector<String>();
+		results = new Vector<StringBuffer>();
 		repetitions = Integer.parseInt(args[0]);
 	}
 
@@ -89,7 +89,7 @@ public class WhoAgent extends UWAgent implements Serializable {
 		}
 		
 		// Write this nodes's results to the vector...
-		results.add(sb.toString());
+		results.add(sb);
 		
 		// Check if we continue onto another machine
 		if (node_num + 1 < my_args.length)
@@ -102,8 +102,9 @@ public class WhoAgent extends UWAgent implements Serializable {
 	 * Prints out the results vector in the home node.
 	 */
 	public void printResults() {
-		for (int z = 0; z < results.size(); ++z)
-			System.out.println(results.elementAt(z));
+		for (int z = 0; z < results.size(); ++z) {
+			System.out.println((String)(results.elementAt(z).toString()));
+		}
 		
 		results.clear();	// Empty out the Vector
 		
