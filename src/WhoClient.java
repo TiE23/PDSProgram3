@@ -13,13 +13,17 @@ public class WhoClient {
 	 */
 	@SuppressWarnings("unchecked")
 	public WhoClient(String args[]) throws Exception {
-		long startTime = System.currentTimeMillis();
 		
-		// Vector to hold the returned results
+		long startTime = System.currentTimeMillis();
+		int repetitions = Integer.parseInt(args[1]);
 		Vector<String> returnValue = null;
 		
+		// Loop through the repetitions
+		for (int n = 0; n < repetitions; ++n) {
+		System.out.println("Loop #" + n + ":");
+		
 		// Loop through the server(s)
-		for (int x = 1; x < args.length; ++x) {
+		for (int x = 2; x < args.length; ++x) {
 			ServerInterface server = (ServerInterface)
 					Naming.lookup("rmi://" + args[x] + ":" + 
 									args[0] +"/whoserver");
@@ -35,6 +39,7 @@ public class WhoClient {
 			}
 			returnValue.clear();	// Empty out the Vector
 		}
+		}
 		
 		System.out.println("Execution time: " + 
 					(System.currentTimeMillis() - startTime) + "ms");
@@ -46,8 +51,9 @@ public class WhoClient {
 	 * @param args Console arguments
 	 */
 	public static void main(String args[]) {
-		if (args.length < 2) {
-			System.err.println("Usage: java WhoClient port# ip1 ip2 ip3...");
+		if (args.length < 3) {
+			System.err.println(
+					"Usage: java WhoClient port# repetitions ip1 ip2 ip3...");
 			System.exit(-1);
 		}
 		try {
