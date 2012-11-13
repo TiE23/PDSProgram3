@@ -6,12 +6,13 @@ import java.io.*;
 import java.util.Vector;
 import UWAgent.*;
 
+@SuppressWarnings("serial")
 public class WhoAgent extends UWAgent implements Serializable {
-
 	private String[] my_args;
 	private int node_num;
 	private int repetitions;
 	private int cycle = 1;
+	private long startTime;
 	private Vector<String> results;
 
 	/**
@@ -19,12 +20,20 @@ public class WhoAgent extends UWAgent implements Serializable {
 	 * @param args Console arguments from main
 	 */
 	public WhoAgent( String[] args) {	
+		startTime = System.currentTimeMillis();
+		
+		System.out.println("INJECTED");
+		
+		for (int z = 0; z < args.length; ++z)
+			System.out.println("[" + z + "] = \"" + args[z] + "\"");
 		
 	 	// Copy the arguments into private memory
 		my_args = new String[args.length];
 		for (int x = 0; x < args.length; ++x)
 			my_args[x] = args[x];
 
+		
+		results = new Vector<String>();
 		repetitions = Integer.parseInt(args[0]);
 	}
 
@@ -32,10 +41,19 @@ public class WhoAgent extends UWAgent implements Serializable {
 	 * UWAgent init()
 	 */
 	public void init() {
+		
+		// Repeating...
 		if (cycle <= repetitions) {
 			System.out.println("Loop #" + cycle + ":");
 			node_num = 1;
-			hop(my_args[node_num + 1], "get", null);
+			
+			if (node_num + 1 < my_args.length) 
+				hop(my_args[node_num + 1], "get", null);
+
+				
+		} else {
+			System.out.println("Execution time: " + 
+					(System.currentTimeMillis() - startTime) + "ms");
 		}
 	}
 	
@@ -47,10 +65,12 @@ public class WhoAgent extends UWAgent implements Serializable {
 		node_num++;
 		
 		// StringBuffer for easy & efficient string building
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer("");
+		String header = my_args[node_num] + ":";
 		
 		// Report this node's name
-		sb.append("Node #" + node_num + " \"" + my_args[node_num + 1] + "\"");
+		sb.append(header + "\n");
+		System.out.println("\n" + header);
 		
 		// Copied from WhoServer.java
 		String line;
@@ -75,7 +95,7 @@ public class WhoAgent extends UWAgent implements Serializable {
 		if (node_num + 1 < my_args.length)
 			hop(my_args[node_num + 1], "get", null);
 		else // Reached end of host arguments
-			hop(my_args[1], "printResults", null);
+			hop(my_args[1], "printResults", null);	// Go to origin host
 	}
 
 	/**
@@ -89,19 +109,5 @@ public class WhoAgent extends UWAgent implements Serializable {
 		
 		cycle++;
 		init();				// Go back to the start!
-	}
-	
-	/**
-	 * Main function for the origin (injecting) host.
-	 * @param args
-	 */
-	public static void main( String args[]) {
-		if (args.length < 1) {
-			System.err.println(
-					"Usage: WhoAgent repetitions homeip ip1 ip2 ip3...");
-			System.exit(-1);
-		}
-		System.out.println("INJECTED");
-		new WhoAgent(args);
 	}
 }
